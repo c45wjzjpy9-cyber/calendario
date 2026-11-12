@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calendario</title>
+<style>
+:root{--bg:#0b0d12;--card:#151823;--card2:#1b2030;--text:#eef1f8;--muted:#98a2b8;--accent:#7c5cff;--accent2:#22d3ee}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{background:radial-gradient(1200px 700px at 15% -10%,#241d4d 0%,transparent 55%),radial-gradient(900px 600px at 95% 10%,#0e3b46 0%,transparent 45%),var(--bg);color:var(--text);min-height:100vh;padding:20px}
+.app{max-width:1080px;margin:auto}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;animation:fade .6s ease both}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-size:22px;box-shadow:0 10px 30px rgba(124,92,255,.35)}
+h1{font-size:22px;letter-spacing:-.4px}
+.sub{color:var(--muted);font-size:13px}
+button{border:0;cursor:pointer;font:inherit;color:var(--text);background:var(--card2);padding:11px 15px;border-radius:12px;transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
+button:hover{transform:translateY(-2px);background:#232a3d}
+button.primary{background:linear-gradient(135deg,var(--accent),#5b8cff);box-shadow:0 10px 24px rgba(124,92,255,.35)}
+.grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.01)),var(--card);border:1px solid rgba(255,255,255,.07);border-radius:22px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.35);animation:rise .5s ease both}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.month{font-weight:700;font-size:19px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:center;color:var(--muted);font-size:12px;margin-bottom:8px}
+.cells{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.cell{aspect-ratio:1/1;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:8px;cursor:pointer;transition:transform .2s ease,background .2s ease,border .2s ease;position:relative;overflow:hidden}
+.cell:hover{transform:translateY(-3px) scale(1.03);background:rgba(124,92,255,.14);border-color:rgba(124,92,255,.45)}
+.cell.today{border-color:var(--accent2);box-shadow:inset 0 0 0 1px rgba(34,211,238,.4)}
+.cell.selected{background:linear-gradient(135deg,rgba(124,92,255,.35),rgba(34,211,238,.18));border-color:var(--accent)}
+.num{font-weight:700}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);margin-top:5px;animation:pulse 2s infinite}
+.cell .count{position:absolute;bottom:6px;font-size:10px;color:var(--muted)}
+.day-title{font-size:18px;font-weight:700;margin-bottom:12px}
+.event{background:var(--card2);border:1px solid rgba(255,255,255,.07);border-left:4px solid var(--accent);padding:12px;border-radius:14px;margin-bottom:10px;display:flex;justify-content:space-between;gap:10px;transition:transform .2s ease,opacity .25s ease;animation:slide .35s ease both}
+.event:hover{transform:translateX(4px)}
+.event .t{font-weight:700}
+.event .m{color:var(--muted);font-size:13px;margin-top:3px}
+.empty{color:var(--muted);text-align:center;padding:28px;border:1px dashed rgba(255,255,255,.12);border-radius:16px}
+dialog{background:var(--card);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:22px;width:min(430px,94vw);box-shadow:0 30px 80px rgba(0,0,0,.6);animation:pop .28s cubic-bezier(.2,.9,.3,1.2)}
+dialog::backdrop{background:rgba(4,6,12,.7);backdrop-filter:blur(6px)}
+input,textarea{width:100%;background:#0e1220;border:1px solid rgba(255,255,255,.1);color:var(--text);border-radius:12px;padding:12px;margin-top:6px;outline:none;transition:border .2s,box-shadow .2s}
+input:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(124,92,255,.16)}
+label{font-size:12px;color:var(--muted);display:block;margin-top:12px}
+.row{display:flex;gap:10px}.row>*{flex:1}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+@keyframes fade{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes slide{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.92) translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="brand"><div class="logo">📅</div><div><h1>Calendario</h1><div class="sub">I tuoi impegni, belli e veloci</div></div></div>
+<button class="primary" onclick="openModal()">+ Nuovo</button>
+</header>
+<div class="grid">
+<div class="card">
+<div class="cal-head">
+<button onclick="changeMonth(-1)">←</button>
+<div class="month" id="month"></div>
+<button onclick="changeMonth(1)">→</button>
+</div>
+<div class="days"><div>Lun</div><div>Mar</div><div>Mer</div><div>Gio</div><div>Ven</div><div>Sab</div><div>Dom</div></div>
+<div class="cells" id="cells"></div>
+</div>
+<div class="card">
+<div class="day-title" id="dayTitle"></div>
+<div id="events"></div>
+</div>
+</div>
+</div>
+<dialog id="modal">
+<h3 style="margin-bottom:6px">Nuovo appuntamento</h3>
+<label>Titolo</label><input id="title" placeholder="Es. Dentista">
+<div class="row"><div><label>Data</label><input id="date" type="date"></div><div><label>Ora</label><input id="time" type="time"></div></div>
+<label>Note</label><textarea id="notes" rows="2" placeholder="Note facoltative"></textarea>
+<div class="actions"><button onclick="closeModal()">Annulla</button><button class="primary" onclick="save()">Salva</button></div>
+</dialog>
+<script>
+let events=JSON.parse(localStorage.getItem('events')||'[]');
+let view=new Date(), selected=new Date();
+const pad=n=>String(n).padStart(2,'0');
+const key=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+function render(){
+ document.getElementById('month').textContent=view.toLocaleDateString('it-IT',{month:'long',year:'numeric'});
+ const first=new Date(view.getFullYear(),view.getMonth(),1);
+ let start=(first.getDay()+6)%7;
+ const days=new Date(view.getFullYear(),view.getMonth()+1,0).getDate();
+ const cells=document.getElementById('cells');cells.innerHTML='';
+ for(let i=0;i<start;i++)cells.appendChild(Object.assign(document.createElement('div'),{className:'cell'}));
+ for(let d=1;d<=days;d++){
+  const date=new Date(view.getFullYear(),view.getMonth(),d);
+  const c=document.createElement('div');c.className='cell';
+  if(key(date)===key(new Date()))c.classList.add('today');
+  if(key(date)===key(selected))c.classList.add('selected');
+  const n=events.filter(e=>e.date===key(date)).length;
+  c.innerHTML=`<div class="num">${d}</div>${n?`<div class="dot"></div><div class="count">${n}</div>`:''}`;
+  c.onclick=()=>{selected=date;render();};
+  cells.appendChild(c);
+ }
+ document.getElementById('dayTitle').textContent=selected.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
+ const list=events.filter(e=>e.date===key(selected)).sort((a,b)=>a.time.localeCompare(b.time));
+ const box=document.getElementById('events');box.innerHTML=list.length?'':'<div class="empty">Nessun appuntamento</div>';
+ list.forEach(e=>{const el=document.createElement('div');el.className='event';el.innerHTML=`<div><div class="t">${e.title}</div><div class="m">${e.time||'Tutto il giorno'}${e.notes?' • '+e.notes:''}</div></div><button onclick="del('${e.id}')">✕</button>`;box.appendChild(el);});
+}
+function changeMonth(n){view=new Date(view.getFullYear(),view.getMonth()+n,1);render();}
+function openModal(){document.getElementById('date').value=key(selected);document.getElementById('modal').showModal();}
+function closeModal(){document.getElementById('modal').close();}
+function save(){
+ const t=document.getElementById('title').value.trim();if(!t)return;
+ events.push({id:crypto.randomUUID(),title:t,date:document.getElementById('date').value,time:document.getElementById('time').value,notes:document.getElementById('notes').value.trim()});
+ localStorage.setItem('events',JSON.stringify(events));closeModal();render();
+}
+function del(id){events=events.filter(e=>e.id!==id);localStorage.setItem('events',JSON.stringify(events));render();}
+render();
+</script>
+</body>
+</html>
